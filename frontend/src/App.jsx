@@ -2,6 +2,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home.jsx";
+import Projects from "./pages/Projects.jsx";
+import Stories from "./pages/Stories.jsx";
+import StoryDetail from "./pages/StoryDetail.jsx";
+import Kaggle from "./pages/Kaggle.jsx";
+import About from "./pages/About.jsx";
+import Contact from "./pages/Contact.jsx";
 import ChatbotWidget from "./components/ChatbotWidget.jsx";
 
 export default function App() {
@@ -11,16 +17,17 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<div className="container py-20">Projects coming soon…</div>} />
-          <Route path="/stories"  element={<div className="container py-20">Data Stories coming soon…</div>} />
-          <Route path="/kaggle"   element={<div className="container py-20">Kaggle hub coming soon…</div>} />
-          <Route path="/about"    element={<div className="container py-20">About page coming soon…</div>} />
-          <Route path="/contact"  element={<div className="container py-20">Contact page coming soon…</div>} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/stories" element={<Stories />} />
+          <Route path="/stories/:slug" element={<StoryDetail />} />
+          <Route path="/kaggle" element={<Kaggle />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />
-      <ChatbotWidget /> {/* ← floating widget */}
+      <ChatbotWidget />
     </div>
   );
 }
