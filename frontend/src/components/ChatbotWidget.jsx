@@ -1,15 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Send, X, Mail, User, MessageSquare } from "lucide-react";
 
+/**
+ * Save lead data to backend API or fallback to localStorage
+ */
 const saveLead = async (payload) => {
-  // TODO: point this to your backend later (FastAPI)
-  // const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
-  // await fetch(`${API}/leads`, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
-  // For now, keep a local backup:
-  const key = "sn_leads";
-  const existing = JSON.parse(localStorage.getItem(key) || "[]");
-  existing.push({ ...payload, ts: new Date().toISOString() });
-  localStorage.setItem(key, JSON.stringify(existing));
+  const API = import.meta.env.VITE_API_URL; // e.g. https://your-codespace-id-8000.app.github.dev
+  try {
+    if (!API) throw new Error("Missing VITE_API_URL");
+
+    const res = await fetch(`${API}/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    return true; // success ✅
+  } catch (e) {
+    console.warn("Failed to save lead remotely, saving locally:", e.message);
+
+    // Fallback: store locally
+    const key = "sn_leads";
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    existing.push({ ...payload, ts: new Date().toISOString(), offline: true });
+    localStorage.setItem(key, JSON.stringify(existing));
+    return false;
+  }
 };
 
 export default function ChatbotWidget() {
@@ -19,7 +37,7 @@ export default function ChatbotWidget() {
   ]);
   const [input, setInput] = useState("");
   const [lead, setLead] = useState({ name: "", email: "", topic: "" });
-  const [stage, setStage] = useState("topic"); // topic -> name -> email -> done
+  const [stage, setStage] = useState("topic"); // topic → name → email → done
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +56,7 @@ export default function ChatbotWidget() {
     if (!trimmed) return;
 
     setMessages((m) => [...m, { role: "user", text: trimmed }]);
+    setInput("");
 
     if (stage === "topic") {
       setLead((l) => ({ ...l, topic: trimmed }));
@@ -48,29 +67,33 @@ export default function ChatbotWidget() {
       setMessages((m) => [...m, { role: "bot", text: "Nice to meet you. What’s your email?" }]);
       setStage("email");
     } else if (stage === "email") {
-      // very light validation
       const ok = /\S+@\S+\.\S+/.test(trimmed);
       if (!ok) {
         setMessages((m) => [...m, { role: "bot", text: "That email looks off — try again?" }]);
-      } else {
-        const payload = { ...lead, email: trimmed };
-        await saveLead(payload);
+        return;
+      }
+      const payload = { ...lead, email: trimmed };
+      const saved = await saveLead(payload);
+      if (saved) {
         setMessages((m) => [
           ...m,
-          { role: "bot", text: "Thanks! I’ve saved your details. I’ll follow up shortly. Want to book a call?" },
+          { role: "bot", text: "Thanks! I’ve saved your details ✅ I’ll follow up shortly." },
         ]);
-        setStage("done");
+      } else {
+        setMessages((m) => [
+          ...m,
+          { role: "bot", text: "Saved locally (offline). I’ll sync later when online." },
+        ]);
       }
+      setStage("done");
     } else {
-      // generic reply stub
-      setMessages((m) => [...m, { role: "bot", text: "Got it! I’ll include this in your lead summary." }]);
+      setMessages((m) => [...m, { role: "bot", text: "Got it! I’ll include this note in your file." }]);
     }
-    setInput("");
   };
 
   return (
     <>
-      {/* FAB button */}
+      {/* Floating Chat Button */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -81,9 +104,10 @@ export default function ChatbotWidget() {
         </button>
       )}
 
-      {/* Panel */}
+      {/* Chat Panel */}
       {open && (
         <div className="fixed bottom-6 right-6 w-[360px] max-w-[90vw] rounded-2xl border border-white/10 bg-navy/95 backdrop-blur shadow-soft">
+          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2">
               <Bot className="w-5 h-5 text-indigo" />
@@ -94,6 +118,7 @@ export default function ChatbotWidget() {
             </button>
           </div>
 
+          {/* Messages */}
           <div ref={listRef} className="h-64 overflow-auto px-4 py-3 space-y-2">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -108,6 +133,7 @@ export default function ChatbotWidget() {
             ))}
           </div>
 
+          {/* Input Bar */}
           <div className="px-3 pb-3">
             <div className="flex items-center gap-2">
               <div className="px-2 text-white/60">
