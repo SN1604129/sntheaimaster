@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Define custom design tokens (colors, etc.) */
+@theme {
+  --color-navy: #0b1220;
+  --color-indigo: #5b6cff;
+
+  /* optional extras used below */
+  --shadow-soft: 0 10px 30px rgba(0,0,0,0.12);
+  --radius-2xl: 1.25rem;
+}
+
+/* Custom utility for soft shadow (optional) */
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+/* Global tweaks */
+:root { color-scheme: dark; }
+
+body {
+  @apply bg-navy text-white antialiased;
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
