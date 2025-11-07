@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home.jsx";
+import ChatbotWidget from "./components/ChatbotWidget.jsx";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <ChatbotWidget /> {/* ← floating widget */}
     </div>
   );
 }
