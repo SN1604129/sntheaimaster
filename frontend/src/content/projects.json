@@ -1,0 +1,12 @@
+[
+  {
+    "id": "rag-assistant",
+    "title": "RAG Assistant for PDFs",
+    "tagline": "Ask questions over your documents with citations.",
+    "tags": ["RAG", "NLP", "Vector DB"],
+    "cover": "https://images.unsplash.com/photo-1526378722484-bd91ca387e72?q=80&w=1200&auto=format&fit=crop",
+    "demoUrl": "#",
+    "codeUrl": "#",
+    "caseUrl": "/projects#rag-assistant"
+  }
+]

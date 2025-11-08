@@ -1,0 +1,13 @@
+[
+  {
+    "slug": "titanic-survivors",
+    "title": "Who Survived the Titanic — and Why?",
+    "hook": "A century-old tragedy retold with data.",
+    "thumb": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop",
+    "tableauUrl": "https://public.tableau.com/views/RegionalSampleWorkbook/Storms",
+    "powerbiUrl": "",
+    "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "source": "Kaggle Titanic",
+    "takeaway": "Gender, class, and age shaped survival odds."
+  }
+]
